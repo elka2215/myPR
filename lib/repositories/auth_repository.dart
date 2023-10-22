@@ -12,22 +12,20 @@ class AuthRepository {
       GetAuthEvent event, Emitter<AuthBlocState> emit) async {
     Response response;
     emit(LoadingAuthState());
-    try {
-      response = await http.post(
-        Uri.parse("https://freefakeapi.io/authapi/login"),
+    response = await http.post(
+      Uri.parse("https://freefakeapi.io/authapi/login"),
 
-        /// наш апи который сам нашел
-        body: convert.jsonEncode({
-          /// в тело мы переносим параметры
-          'username': event.username,
-          'password': event.password,
-        }),
-      );
+      /// наш апи который сам нашел
+      body: convert.jsonEncode({
+        /// в тело мы переносим параметры
+        'username': event.username,
+        'password': event.password,
+      }),
+    );
+
+    if (response.statusCode == 200) {
       emit(LoadedAuthState());
-
-      /// и если у нас все хорошо ушел запрос то мы вызывем состняие что все загрузилось
-      print(response.body);
-    } catch (_) {
+    } else {
       emit(FailureLoginState());
     }
   }
